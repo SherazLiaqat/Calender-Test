@@ -1,0 +1,37 @@
+.red{
+background-color: green;
+}
+.catalogue-item{
+    height: 20rem;
+    width: 40rem;
+    margin: 1rem;
+    display: flex;
+}
+.catalogue-item:hover, .catalogue-item:active {
+    outline: 2px solid black;
+    cursor: pointer;
+}
+.catalogue-item > .category
+{
+    font-weight: bold;
+    margin: 1rem;
+}
+
+.catalogue-item > .description
+{
+    font-weight: bold;
+    height: 9rem;
+    display: block;
+    overflow: hidden;
+}
+
+.catalogue-item > .image
+{
+    height: 15rem;
+    width: auto;    
+}
+
+.catalogue-item > .price
+{
+    font-weight: bold;
+}

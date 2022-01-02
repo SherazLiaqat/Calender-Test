@@ -1,213 +1,80 @@
-import React, { useState, useEffect } from "react";
-import format from "date-fns/format";
-import getDay from "date-fns/getDay";
-import parse from "date-fns/parse";
-import startOfWeek from "date-fns/startOfWeek";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-
-import { NativeSelect, FormControl } from "@mui/material";
-
-
-
-const locales = {
-    "en-US": require("date-fns/locale/en-US"),
+import React, { useState,useReducer } from "react";
+import Usereducer from './Components/Usereducer';
+import Useref from "./Components/Useref";
+const reducer=(state,action)=>{
+switch(action.type){
+  case "INCREMENT":
+    return{counter:state.counter+1,showtext:state.showtext}
+    default:
+      return state
+}
+}
+function Demo() {
+  const names = ['James', 'John', 'Paul', 'Ringo', 'George'];
+  const peoples=[ {
+    name: 'James',
+    age: 31,
+  },
+  {
+    name: 'John',
+    age: 45,
+  },
+  {
+    name: 'Paul',
+    age: 65,
+  },
+  {
+    name: 'Ringo',
+    age: 49,
+  },
+  {
+    name: 'George',
+    age: 34,
+  }]
+  const [count, setCount] = useState(0);
+  const[input,setInput]=useState("pedro");
+  //this is usereducer state
+  const[state,dispatch]=useReducer(reducer,{counter:0,showtext:false});
+  const increment = () => {
+    setCount (count + 1);
   };
-  const localizer = dateFnsLocalizer({
-    format,
-    parse,
-    startOfWeek,
-    getDay,
-    locales,
-  });
-  
-//country
-const c = "";
-const Marker = ({ icon }) => <div>{icon}</div>;
-const Event = ({ props }) => {
-  const [user, setuser] = useState("");
-
-  const [countries, setCountries] = useState([]);
-  const [position, setPosition] = useState([]);
-  const [filter, setFilter] = useState("Global");
-  const [description, setDesription] = useState([]);
-  const [date, setDate] = useState([]);
-
-  useEffect(() => {
-    fetchAPI();
-  }, []);
-
-  const fetchAPI = async () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ country: filter }),
-    };
-    const response = await fetch(
-      "https://calendarific.com/api/v2/holidays?api_key=9c2cdba3c4345070ec29600f92a239503330af62&country=pk&year=2021",
-      requestOptions
-    );
-    const data = await response.json();
-
-    console.log(data);
-    console.log(filter);
-    setuser(data.response.countries);
-    setDesription(response.data.response.holidays[7].name);
-    setDate(response.data.response.holidays[7].date.iso)
-    setCountries(data.Country);
-  };
-
-  const callback = async () => {
-    fetchAPI();
-  };
-  const events = [
-    {
-      title: [description],
+  const onchange=(event)=>{
+    setInput(event.target.value)
+  }
+  return (
+    <div>
+      {/*React hooks */}
+      {/*useState */}
       
-      start: [date],
-      end: [date],
-    },
-   
-   
-    
-  ];
-  return (
-    <>
-      <div className="div-main">
-        <div className="country-selecter">
-          <FormControl >
-            <NativeSelect
-              onChange={(e) => setFilter(e.target.value)}
-              onClick={callback}
-              id="Type"
-              name="Type"
-            >
-              <option>Global</option>
-              {countries.map((country) => (
-                <option value={country}>{country}</option>
-              ))}
-            </NativeSelect>
-          </FormControl>
-          <Calendar
-        localizer={localizer}
-        events= {events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500, margin: "50px" }}
-      />
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Event;
-
-{
-  /* import format from "date-fns/format";
-import getDay from "date-fns/getDay";
-import parse from "date-fns/parse";
-import startOfWeek from "date-fns/startOfWeek";
-import React, { useState, useEffect } from "react";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import DatePicker from "react-date-picker";
-import "react-date-picker/dist/DatePicker.css";
-import axios from "axios";
-import { NativeSelect, FormControl } from "@mui/material";
-const locales = {
-  "en-US": require("date-fns/locale/en-US"),
-};
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
-
-function App(props) {
-  const [newEvent, setNewEvent] = useState({ title: "", start: "", end: "" });
-  const [data, setData] = useState([]);
-  const [description, setDesription] = useState([]);
-  const [date, setDate] = useState([]);
-  const [countries, setCountries] = useState([]);
-  const [holiday, setHoliday] = useState([]);
-
-  
-  useEffect(() => {
-    axios
-      .get(
-        "https://calendarific.com/api/v2/holidays?api_key=9c2cdba3c4345070ec29600f92a239503330af62&country=all&year=2021"
-      )
-      .then(function (response) {
-        // handle success
-        console.log(response.data.response.holidays);
-        setHoliday(response.data.response.holidays);
-        setDesription(response.data.response.holidays[7].name);
-        setDate(response.data.response.holidays[7].date.iso);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-  }, []);
-
-  const events = [
-    {
-      title: [description],
-
-      start: [date],
-      end: [date],
-    },
-  ];
-
-  return (
-    <div className="App">
-      <h1>text</h1>
-      {description}
-      <h1>
-        Calendar
-        {holiday.map((hol) => (
-          <p style={{ display: "flex" }}>
-            {hol.country.name}
-            {hol.name}
-          </p>
-        ))}
-      </h1>
-
-      <FormControl>
-        <NativeSelect>
-          <option>Select Country</option>
-          {holiday.map((country) => (
-            <option value={country}>{country.country.name}</option>
-          ))}
-         
-        </NativeSelect>
-      </FormControl>
-      <h2>Add New Event</h2>
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500, margin: "50px" }}
-      />
-      <div>
-        <input
-          type="text"
-          placeholder="Add Title"
-          style={{ width: "20%", marginRight: "10px" }}
-          value={newEvent.title}
-          onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-        />
-      </div>
+      <button onClick={increment}>click count{count}</button>
+      <input placeholder="enter something" onChange={onchange}/>
+      {input}
+      {/*useResducer */}
+      <h1>{state.counter}</h1>
+      <button onclick={()=>{dispatch({type:"INCREMENT"});}}>
+        use reducer
+    </button>
+    {!state.showtext && <p>this is a text</p>}
+    {/*useResducer */}
+    <Usereducer/>
+    {/*useRef */}
+    <Useref/>
+    {/*filter method 1*/}
+    <div>
+      {names.filter(name => name.includes('J')).map(filteredName => (
+        <li>
+          {filteredName}
+        </li>
+      ))}
+    </div>
+    {/*filter method 2*/}
+    {peoples.filter(person => person.age < 60).map(filteredPerson => (
+    <li>
+      {filteredPerson.name}
+    </li>
+  ))}
     </div>
   );
 }
 
-export default App;*/
-}
+export default Demo;
